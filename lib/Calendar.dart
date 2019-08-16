@@ -31,17 +31,17 @@ class CalendarChooseState extends State<CalendarChoose> {
   List<List<DayMonthDetailModel>> daysOfMonth;
   final TRUE = 1;
   final FALSE = 0;
-  List<int> dayCodeList=List();
+  List<int> dayCodeList = List();
   int dayCode;
   double currentMonth = 0.0;
   ScrollController scrollController;
   int lastSelectedMonth, lastSelectedDay;
   bool isLastSelected = false;
   String selectedDate;
-  int startMonthIndex=0;
-  int startDayIndex=0;
-  int endMonthIndex=0;
-  int endDayIndex=0;
+  int startMonthIndex = 0;
+  int startDayIndex = 0;
+  int endMonthIndex = 0;
+  int endDayIndex = 0;
   @override
   void initState() {
     daysOfMonth = List();
@@ -69,7 +69,10 @@ class CalendarChooseState extends State<CalendarChoose> {
                 onTap: () {
                   Navigator.pop(context, selectedDate);
                 },
-                child: Image.asset("images/tick.png",color: Colors.white,))
+                child: Image.asset(
+                  "images/tick.png",
+                  color: Colors.white,
+                ))
           ],
         ));
   }
@@ -108,7 +111,7 @@ class CalendarChooseState extends State<CalendarChoose> {
                   itemCount: daysOfMonth.length,
                   itemBuilder: (context, index) {
                     return Container(
-                      height: 28 * daysOfMonth.length/0.9,
+                      height: 28 * daysOfMonth.length / 0.9,
                       child: Container(child: monthList(index)),
                     );
                   },
@@ -189,15 +192,15 @@ class CalendarChooseState extends State<CalendarChoose> {
 
   int tapIncrement = 1;
 
-  void setColorToDay(indexMonth,index){
-
-        daysOfMonth[indexMonth][index].selectedColor = Colors.blue;
-        daysOfMonth[indexMonth][index].selectedTextColor = Colors.white;
-
+  void setColorToDay(indexMonth, index) {
+    daysOfMonth[indexMonth][index].selectedColor = Colors.blue;
+    daysOfMonth[indexMonth][index].selectedTextColor = Colors.white;
   }
 
-  void setColorLighBlueToDay(indexMonth,index){
-    if(daysOfMonth[indexMonth][index].day!="") {
+  void setColorLighBlueToDay(indexMonth, index) {
+    if (daysOfMonth[indexMonth][index].day != "") {
+      daysOfMonth[indexMonth][index].borderRadius =
+          BorderRadius.all(Radius.circular(10));
       daysOfMonth[indexMonth][index].selectedColor = Colors.lightBlueAccent;
       daysOfMonth[indexMonth][index].selectedTextColor = Colors.white;
     }
@@ -207,49 +210,70 @@ class CalendarChooseState extends State<CalendarChoose> {
     print("startMontheInexe ${daysOfMonth.length}  ${dayCodeList.length}");
     if (startMonthIndex == endMonthIndex) {
       print("rangeSelection if");
+      int tempDate = startDayIndex;
       while (startDayIndex != endDayIndex) {
-        setColorLighBlueToDay(startMonthIndex, startDayIndex);
+        if (startDayIndex != tempDate)
+          setColorLighBlueToDay(startMonthIndex, startDayIndex);
+        else {
+          daysOfMonth[startMonthIndex][startDayIndex].borderRadius =
+              BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  bottomLeft: Radius.circular(30),
+                  topRight: Radius.circular(10),
+                  bottomRight: Radius.circular(10));
+        }
         startDayIndex++;
       }
-    }else{
+    } else {
       print("rangeSelection else");
-      print("startEndDayselection, $startMonthIndex $endMonthIndex");
+      for (int j = startDayIndex;
+          j < daysOfMonth[startMonthIndex].length;
+          j++) {
+        if (j != startDayIndex)
+          setColorLighBlueToDay(startMonthIndex, j);
+        else
+          daysOfMonth[startMonthIndex][j].borderRadius = BorderRadius.only(
+              topLeft: Radius.circular(30),
+              bottomLeft: Radius.circular(30),
+              topRight: Radius.circular(10),
+              bottomRight: Radius.circular(10));
+      }
+      startMonthIndex = startMonthIndex + 1;
 
-       for(int j=startDayIndex; j<daysOfMonth[startMonthIndex].length;j++){
-         setColorLighBlueToDay(startMonthIndex,j);
-       }
-       startMonthIndex=startMonthIndex+1;
-
-      while(startMonthIndex!=endMonthIndex){
-        for(int k=0;k<daysOfMonth[startMonthIndex].length;k++) {
+      while (startMonthIndex != endMonthIndex) {
+        for (int k = 0; k < daysOfMonth[startMonthIndex].length; k++) {
           print("whileloopyexecuted");
           setColorLighBlueToDay(startMonthIndex, k);
         }
-       startMonthIndex++;
+        startMonthIndex++;
       }
 
-      for(int l=0;l<endDayIndex;l++){
+      for (int l = 0; l < endDayIndex; l++) {
         setColorLighBlueToDay(startMonthIndex, l);
       }
     }
-
   }
-
-
 
   void dateOnTapSelection(indexMonth, index) {
     setState(() {
       if (widget.rangeDate) {
         if (tapIncrement == 1) {
-          selectedDate="${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
-          setColorToDay(indexMonth,index);
-          startMonthIndex=indexMonth;
-          startDayIndex=index;
+          selectedDate =
+              "${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
+          setColorToDay(indexMonth, index);
+          startMonthIndex = indexMonth;
+          startDayIndex = index;
         } else if (tapIncrement == 2) {
-          selectedDate+="  ${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
-          setColorToDay(indexMonth,index);
-          endMonthIndex=indexMonth;
-          endDayIndex=index;
+          selectedDate +=
+              "  ${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
+          setColorToDay(indexMonth, index);
+          daysOfMonth[indexMonth][index].borderRadius = BorderRadius.only(
+              topLeft: Radius.circular(10),
+              bottomLeft: Radius.circular(10),
+              topRight: Radius.circular(30),
+              bottomRight: Radius.circular(30));
+          endMonthIndex = indexMonth;
+          endDayIndex = index;
           showRangeSelection();
         }
         tapIncrement = tapIncrement + 1;
