@@ -3,7 +3,7 @@ import 'package:flutter/scheduler.dart';
 
 class CalendarChoose extends StatefulWidget {
   bool rangeDate;
-  CalendarChoose(this.rangeDate);
+  CalendarChoose(this.rangeDate){}
 
   @override
   State<StatefulWidget> createState() {
@@ -38,6 +38,7 @@ class CalendarChooseState extends State<CalendarChoose> {
   int lastSelectedMonth, lastSelectedDay;
   bool isLastSelected = false;
   String selectedDate;
+  int tempStartMonthIndex=0;
   int startMonthIndex = 0;
   int startDayIndex = 0;
   int endMonthIndex = 0;
@@ -45,7 +46,7 @@ class CalendarChooseState extends State<CalendarChoose> {
   @override
   void initState() {
     daysOfMonth = List();
-    determineleapyear(2019);
+    determineLeapYear(2019);
     determinedaycode(2019);
     scrollController = new ScrollController(initialScrollOffset: 11.0);
     for (int i = 1; i <= 12; i++) {
@@ -197,13 +198,19 @@ class CalendarChooseState extends State<CalendarChoose> {
     daysOfMonth[indexMonth][index].selectedTextColor = Colors.white;
   }
 
-  void setColorLighBlueToDay(indexMonth, index) {
+  void setColorLightBlueToDay(indexMonth, index) {
     if (daysOfMonth[indexMonth][index].day != "") {
       daysOfMonth[indexMonth][index].borderRadius =
           BorderRadius.all(Radius.circular(10));
       daysOfMonth[indexMonth][index].selectedColor = Colors.lightBlueAccent;
       daysOfMonth[indexMonth][index].selectedTextColor = Colors.white;
     }
+  }
+
+  void backToNormal(indexMonth,dayIndex){
+    daysOfMonth[indexMonth][dayIndex].selectedColor=Colors.white;
+    daysOfMonth[indexMonth][dayIndex].selectedTextColor=Colors.black;
+    daysOfMonth[indexMonth][dayIndex].borderRadius=BorderRadius.all(Radius.circular(30));
   }
 
   void showRangeSelection() {
@@ -213,7 +220,7 @@ class CalendarChooseState extends State<CalendarChoose> {
       int tempDate = startDayIndex;
       while (startDayIndex != endDayIndex) {
         if (startDayIndex != tempDate)
-          setColorLighBlueToDay(startMonthIndex, startDayIndex);
+          setColorLightBlueToDay(startMonthIndex, startDayIndex);
         else {
           daysOfMonth[startMonthIndex][startDayIndex].borderRadius =
               BorderRadius.only(
@@ -230,7 +237,7 @@ class CalendarChooseState extends State<CalendarChoose> {
           j < daysOfMonth[startMonthIndex].length;
           j++) {
         if (j != startDayIndex)
-          setColorLighBlueToDay(startMonthIndex, j);
+          setColorLightBlueToDay(startMonthIndex, j);
         else
           daysOfMonth[startMonthIndex][j].borderRadius = BorderRadius.only(
               topLeft: Radius.circular(30),
@@ -243,13 +250,13 @@ class CalendarChooseState extends State<CalendarChoose> {
       while (startMonthIndex != endMonthIndex) {
         for (int k = 0; k < daysOfMonth[startMonthIndex].length; k++) {
           print("whileloopyexecuted");
-          setColorLighBlueToDay(startMonthIndex, k);
+          setColorLightBlueToDay(startMonthIndex, k);
         }
         startMonthIndex++;
       }
 
       for (int l = 0; l < endDayIndex; l++) {
-        setColorLighBlueToDay(startMonthIndex, l);
+        setColorLightBlueToDay(startMonthIndex, l);
       }
     }
   }
@@ -257,24 +264,54 @@ class CalendarChooseState extends State<CalendarChoose> {
   void dateOnTapSelection(indexMonth, index) {
     setState(() {
       if (widget.rangeDate) {
+        print("executedrangedate, click is $tapIncrement");
         if (tapIncrement == 1) {
+          print("executedrangedate, first tap");
           selectedDate =
               "${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
           setColorToDay(indexMonth, index);
           startMonthIndex = indexMonth;
           startDayIndex = index;
+          tempStartMonthIndex=indexMonth;
         } else if (tapIncrement == 2) {
-          selectedDate +=
-              "  ${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
-          setColorToDay(indexMonth, index);
-          daysOfMonth[indexMonth][index].borderRadius = BorderRadius.only(
-              topLeft: Radius.circular(10),
-              bottomLeft: Radius.circular(10),
-              topRight: Radius.circular(30),
-              bottomRight: Radius.circular(30));
-          endMonthIndex = indexMonth;
-          endDayIndex = index;
-          showRangeSelection();
+          print("executedrangedate, second tap");
+          if(startMonthIndex>=endMonthIndex) {
+            selectedDate +=
+            "  ${daysOfMonth[indexMonth][index]
+                .day}/${daysOfMonth[indexMonth][index]
+                .month}/${daysOfMonth[indexMonth][index].year}";
+            setColorToDay(indexMonth, index);
+            daysOfMonth[indexMonth][index].borderRadius = BorderRadius.only(
+                topLeft: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+                topRight: Radius.circular(30),
+                bottomRight: Radius.circular(30));
+            endMonthIndex = indexMonth;
+            endDayIndex = index;
+            showRangeSelection();
+          }
+
+        }else if(tapIncrement==3){
+          print("executedrangedate, Third tap");
+          for(int i=0;i<daysOfMonth[tempStartMonthIndex].length;i++){
+            backToNormal(tempStartMonthIndex,i);
+          }
+
+          while (tempStartMonthIndex != endMonthIndex) {
+            for (int k = 0; k < daysOfMonth[tempStartMonthIndex].length; k++) {
+//              print("whileloopyexecuted");
+//              setColorLightBlueToDay(startMonthIndex, k);
+              backToNormal(tempStartMonthIndex,k);
+            }
+            tempStartMonthIndex++;
+          }
+
+          for (int l = 0; l < endDayIndex+1; l++) {
+//            setColorLightBlueToDay(startMonthIndex, l);
+            backToNormal(tempStartMonthIndex,l);
+          }
+
+          tapIncrement=0;
         }
         tapIncrement = tapIncrement + 1;
       } else {
@@ -295,7 +332,7 @@ class CalendarChooseState extends State<CalendarChoose> {
     });
   }
 
-  int determineleapyear(int year) {
+  int determineLeapYear(int year) {
     if (year % 4 == FALSE && year % 100 != FALSE || year % 400 == FALSE) {
       days_in_month[2] = 29;
       return TRUE;
