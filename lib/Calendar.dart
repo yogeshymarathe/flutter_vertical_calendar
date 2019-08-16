@@ -1,9 +1,10 @@
+import 'package:calendar_vertical/scrolling_years_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 class CalendarChoose extends StatefulWidget {
   bool rangeDate;
-  CalendarChoose(this.rangeDate){}
+  CalendarChoose(this.rangeDate) {}
 
   @override
   State<StatefulWidget> createState() {
@@ -12,6 +13,8 @@ class CalendarChoose extends StatefulWidget {
 }
 
 class CalendarChooseState extends State<CalendarChoose> {
+  final _scaffoldKey = new GlobalKey<ScaffoldState>();
+  VoidCallback _showPersBottomSheetCallBack;
   List weeks = ["M", "T", "W", "T", "F", "S", "S"];
   List days_in_month = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   List months = [
@@ -38,7 +41,7 @@ class CalendarChooseState extends State<CalendarChoose> {
   int lastSelectedMonth, lastSelectedDay;
   bool isLastSelected = false;
   String selectedDate;
-  int tempStartMonthIndex=0;
+  int tempStartMonthIndex = 0;
   int startMonthIndex = 0;
   int startDayIndex = 0;
   int endMonthIndex = 0;
@@ -57,7 +60,55 @@ class CalendarChooseState extends State<CalendarChoose> {
         scrollController.jumpTo(currentMonth * 300);
       });
     });
+    _showPersBottomSheetCallBack = _showBottomSheet;
     super.initState();
+  }
+
+  void _showBottomSheet() {
+    setState(() {
+      _showPersBottomSheetCallBack = null;
+    });
+
+    _scaffoldKey.currentState
+        .showBottomSheet((context) {
+          return new Container(
+            height: 300.0,
+            color: Colors.greenAccent,
+            child: new Center(
+              child: new Text("Hi BottomSheet"),
+            ),
+          );
+        })
+        .closed
+        .whenComplete(() {
+          if (mounted) {
+            setState(() {
+              _showPersBottomSheetCallBack = _showBottomSheet;
+            });
+          }
+        });
+  }
+
+  void _showModalSheet() {
+    showModalBottomSheet(
+        context: context,
+        builder: (builder) {
+          return new Container(
+            color: Colors.white,
+            child: Center(
+              child: ScrollingYearsCalendar(
+                context: context,
+                initialDate: DateTime.now(),
+//                firstDate: DateTime.now().subtract(Duration(days: 1)), //for future date
+                firstDate: DateTime.now().subtract(Duration(days: 36500)), // for past dates
+//                lastDate: DateTime.now().add(Duration(days: 36500)),// for future date
+                lastDate: DateTime.now().add(Duration(days:0)), // for past dates
+                currentDateColor: Colors.blue,
+
+              ),
+            ),
+          );
+        });
   }
 
   Widget appBar() {
@@ -66,6 +117,12 @@ class CalendarChooseState extends State<CalendarChoose> {
         child: AppBar(
           title: Text("Selecte date"),
           actions: <Widget>[
+            GestureDetector(
+              onTap: () {
+                _showModalSheet();
+              },
+              child: Center(child: Text("Year")),
+            ),
             GestureDetector(
                 onTap: () {
                   Navigator.pop(context, selectedDate);
@@ -207,10 +264,11 @@ class CalendarChooseState extends State<CalendarChoose> {
     }
   }
 
-  void backToNormal(indexMonth,dayIndex){
-    daysOfMonth[indexMonth][dayIndex].selectedColor=Colors.white;
-    daysOfMonth[indexMonth][dayIndex].selectedTextColor=Colors.black;
-    daysOfMonth[indexMonth][dayIndex].borderRadius=BorderRadius.all(Radius.circular(30));
+  void backToNormal(indexMonth, dayIndex) {
+    daysOfMonth[indexMonth][dayIndex].selectedColor = Colors.white;
+    daysOfMonth[indexMonth][dayIndex].selectedTextColor = Colors.black;
+    daysOfMonth[indexMonth][dayIndex].borderRadius =
+        BorderRadius.all(Radius.circular(30));
   }
 
   void showRangeSelection() {
@@ -272,14 +330,12 @@ class CalendarChooseState extends State<CalendarChoose> {
           setColorToDay(indexMonth, index);
           startMonthIndex = indexMonth;
           startDayIndex = index;
-          tempStartMonthIndex=indexMonth;
+          tempStartMonthIndex = indexMonth;
         } else if (tapIncrement == 2) {
           print("executedrangedate, second tap");
-          if(startMonthIndex>=endMonthIndex) {
+          if (startMonthIndex >= endMonthIndex) {
             selectedDate +=
-            "  ${daysOfMonth[indexMonth][index]
-                .day}/${daysOfMonth[indexMonth][index]
-                .month}/${daysOfMonth[indexMonth][index].year}";
+                "  ${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
             setColorToDay(indexMonth, index);
             daysOfMonth[indexMonth][index].borderRadius = BorderRadius.only(
                 topLeft: Radius.circular(10),
@@ -290,28 +346,27 @@ class CalendarChooseState extends State<CalendarChoose> {
             endDayIndex = index;
             showRangeSelection();
           }
-
-        }else if(tapIncrement==3){
+        } else if (tapIncrement == 3) {
           print("executedrangedate, Third tap");
-          for(int i=0;i<daysOfMonth[tempStartMonthIndex].length;i++){
-            backToNormal(tempStartMonthIndex,i);
+          for (int i = 0; i < daysOfMonth[tempStartMonthIndex].length; i++) {
+            backToNormal(tempStartMonthIndex, i);
           }
 
           while (tempStartMonthIndex != endMonthIndex) {
             for (int k = 0; k < daysOfMonth[tempStartMonthIndex].length; k++) {
 //              print("whileloopyexecuted");
 //              setColorLightBlueToDay(startMonthIndex, k);
-              backToNormal(tempStartMonthIndex,k);
+              backToNormal(tempStartMonthIndex, k);
             }
             tempStartMonthIndex++;
           }
 
-          for (int l = 0; l < endDayIndex+1; l++) {
+          for (int l = 0; l < endDayIndex + 1; l++) {
 //            setColorLightBlueToDay(startMonthIndex, l);
-            backToNormal(tempStartMonthIndex,l);
+            backToNormal(tempStartMonthIndex, l);
           }
 
-          tapIncrement=0;
+          tapIncrement = 0;
         }
         tapIncrement = tapIncrement + 1;
       } else {
