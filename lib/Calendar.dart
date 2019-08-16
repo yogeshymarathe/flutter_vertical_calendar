@@ -15,7 +15,7 @@ class CalendarChoose extends StatefulWidget {
 class CalendarChooseState extends State<CalendarChoose> {
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
   VoidCallback _showPersBottomSheetCallBack;
-  List weeks = ["M", "T", "W", "T", "F", "S", "S"];
+  List weeks = ["S", "M", "T", "W", "T", "F", "S"];
   List days_in_month = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   List months = [
     "January",
@@ -50,7 +50,7 @@ class CalendarChooseState extends State<CalendarChoose> {
   void initState() {
     daysOfMonth = List();
     determineLeapYear(2019);
-    determinedaycode(2019);
+//    determinedaycode(2019);
     scrollController = new ScrollController(initialScrollOffset: 11.0);
     for (int i = 1; i <= 12; i++) {
       calendarMonth(2019, i);
@@ -117,12 +117,6 @@ class CalendarChooseState extends State<CalendarChoose> {
         child: AppBar(
           title: Text("Selecte date"),
           actions: <Widget>[
-            GestureDetector(
-              onTap: () {
-                _showModalSheet();
-              },
-              child: Center(child: Text("Year")),
-            ),
             GestureDetector(
                 onTap: () {
                   Navigator.pop(context, selectedDate);
@@ -197,20 +191,26 @@ class CalendarChooseState extends State<CalendarChoose> {
   Widget monthList(indexMonth) {
     return Column(
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(left: 18.0),
-          child: Row(
-            children: <Widget>[
-              Text("${months[indexMonth]}",
-                  style: TextStyle(
-                      color: Colors.black54, fontWeight: FontWeight.bold)),
-              SizedBox(
-                width: 3,
-              ),
-              Text("2019",
-                  style: TextStyle(
-                      color: Colors.black54, fontWeight: FontWeight.bold))
-            ],
+        GestureDetector(
+          behavior:HitTestBehavior.opaque,
+          onTap:(){
+            _showModalSheet();
+            },
+          child: Container(
+            margin: const EdgeInsets.all(10.0),
+            child: Row(
+              children: <Widget>[
+                Text("${months[indexMonth]}",
+                    style: TextStyle(
+                        color: Colors.black54, fontWeight: FontWeight.bold)),
+                SizedBox(
+                  width: 3,
+                ),
+                Text("2019",
+                    style: TextStyle(
+                        color: Colors.black54, fontWeight: FontWeight.bold))
+              ],
+            ),
           ),
         ),
         SizedBox(
@@ -333,7 +333,6 @@ class CalendarChooseState extends State<CalendarChoose> {
           tempStartMonthIndex = indexMonth;
         } else if (tapIncrement == 2) {
           print("executedrangedate, second tap");
-          if (startMonthIndex >= endMonthIndex) {
             selectedDate +=
                 "  ${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
             setColorToDay(indexMonth, index);
@@ -345,7 +344,6 @@ class CalendarChooseState extends State<CalendarChoose> {
             endMonthIndex = indexMonth;
             endDayIndex = index;
             showRangeSelection();
-          }
         } else if (tapIncrement == 3) {
           print("executedrangedate, Third tap");
           for (int i = 0; i < daysOfMonth[tempStartMonthIndex].length; i++) {
@@ -400,8 +398,10 @@ class CalendarChooseState extends State<CalendarChoose> {
   calendarMonth(int year, indexMonth) async {
     List<DayMonthDetailModel> dmdmList = List();
     int month = indexMonth, day;
+    print("indexMondth, $indexMonth");
+    dayCode=dayOfWeek(1, month, year);
     // Correct the position for the first date
-    for (day = 1; day < dayCode; day++) {
+    for (day = 1; day <= dayCode; day++ ) {
       DayMonthDetailModel localDMDM = DayMonthDetailModel();
       localDMDM.day = "";
       localDMDM.month = 0;
@@ -423,9 +423,17 @@ class CalendarChooseState extends State<CalendarChoose> {
     }
     // Set position for next month
     dayCodeList.add(dayCode);
-    dayCode = (dayCode + days_in_month[month]) % 7;
+//    dayCode = (dayCode + days_in_month[month]) % 7;
 
     daysOfMonth.add(dmdmList);
+  }
+
+
+  int dayOfWeek(int d, int m, int y)
+  {
+    List<int> t = [ 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 ];
+    y -= (m < 3) ? 1 : 0;
+    return ( y + (y/4).floor() - (y/100).floor() + (y/400).floor() + t[m-1] + d) % 7;
   }
 }
 
