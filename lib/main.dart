@@ -1,6 +1,7 @@
+import 'package:calendar_vertical/day_details_model.dart';
 import 'package:flutter/material.dart';
 
-import 'Calendar.dart';
+import 'calendar.dart';
 
 void main() => runApp(MyApp());
 
@@ -45,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
               RaisedButton(
                   onPressed: () async{
                     strDate=await Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => CalendarChoose(true)));
+                        MaterialPageRoute(builder: (context) => CalendarChoose(type:Constant.BIRTHDAY)));
                     if(strDate==null)
                       strDate="";
                   },

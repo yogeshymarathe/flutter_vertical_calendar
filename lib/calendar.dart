@@ -1,10 +1,21 @@
+/*
+Created by Yogesh Marathe
+date 19 august 2019
+description: nothing is impossible.
+ */
+
+
+
 import 'package:calendar_vertical/scrolling_years_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'day_details_model.dart';
+
 
 class CalendarChoose extends StatefulWidget {
-  bool rangeDate;
-  CalendarChoose(this.rangeDate) {}
+
+  String type;
+  CalendarChoose({this.type});
 
   @override
   State<StatefulWidget> createState() {
@@ -12,8 +23,9 @@ class CalendarChoose extends StatefulWidget {
   }
 }
 
-class CalendarChooseState extends State<CalendarChoose> {
-  final _scaffoldKey = new GlobalKey<ScaffoldState>();
+class CalendarChooseState extends State<CalendarChoose> implements YearCallback{
+final _scaffoldKey = new GlobalKey<ScaffoldState>();
+bool rangeDate=false;
   VoidCallback _showPersBottomSheetCallBack;
   List weeks = ["S", "M", "T", "W", "T", "F", "S"];
   List days_in_month = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -32,8 +44,6 @@ class CalendarChooseState extends State<CalendarChoose> {
     "December"
   ];
   List<List<DayMonthDetailModel>> daysOfMonth;
-  final TRUE = 1;
-  final FALSE = 0;
   List<int> dayCodeList = List();
   int dayCode;
   double currentMonth = 0.0;
@@ -46,14 +56,42 @@ class CalendarChooseState extends State<CalendarChoose> {
   int startDayIndex = 0;
   int endMonthIndex = 0;
   int endDayIndex = 0;
+  int selectedYear=DateTime.now().year;
+  List<TempMonthDetails> tempMonths;
+  int bookingFistIteration=1;
   @override
   void initState() {
     daysOfMonth = List();
-    determineLeapYear(2019);
-//    determinedaycode(2019);
+    tempMonths=List();
+    determineLeapYear(selectedYear);
     scrollController = new ScrollController(initialScrollOffset: 11.0);
-    for (int i = 1; i <= 12; i++) {
-      calendarMonth(2019, i);
+    if(widget.type==Constant.BIRTHDAY) {
+      rangeDate=false;
+      for (int i = 1; i <= 12; i++) {
+        calendarMonth(selectedYear, i);
+      }
+    }else if(widget.type==Constant.BOOKING){
+      rangeDate=true;
+      int tmonth=DateTime.now().month-1;
+      for (int i = DateTime.now().month; i <= 12; i++) {
+        calendarMonth(selectedYear, i);
+        TempMonthDetails tmds=TempMonthDetails();
+        tmds.month=months[tmonth];
+        tmds.year=selectedYear;
+        tempMonths.add(tmds);
+        tmonth=tmonth+1;
+      }
+      tmonth=0;
+      selectedYear=selectedYear+1;
+      for (int j = 1; j < DateTime.now().month; j++) {
+        TempMonthDetails tmds=TempMonthDetails();
+        tmds.month=months[tmonth];
+        tmds.year=selectedYear;
+        calendarMonth(selectedYear, j);
+        tempMonths.add(tmds);
+        tmonth=tmonth+1;
+      }
+      print("temporarylastvalueis: 2 $tmonth ${DateTime.now().month}");
     }
     SchedulerBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -97,14 +135,13 @@ class CalendarChooseState extends State<CalendarChoose> {
             color: Colors.white,
             child: Center(
               child: ScrollingYearsCalendar(
-                context: context,
+                calendarInstance: this,
                 initialDate: DateTime.now(),
 //                firstDate: DateTime.now().subtract(Duration(days: 1)), //for future date
                 firstDate: DateTime.now().subtract(Duration(days: 36500)), // for past dates
 //                lastDate: DateTime.now().add(Duration(days: 36500)),// for future date
                 lastDate: DateTime.now().add(Duration(days:0)), // for past dates
                 currentDateColor: Colors.blue,
-
               ),
             ),
           );
@@ -163,8 +200,9 @@ class CalendarChooseState extends State<CalendarChoose> {
                   itemCount: daysOfMonth.length,
                   itemBuilder: (context, index) {
                     return Container(
-                      height: 28 * daysOfMonth.length / 0.9,
-                      child: Container(child: monthList(index)),
+//                      height: 28 * daysOfMonth.length / 0.9,
+                      height: 355,
+                      child: monthList(index),
                     );
                   },
                   separatorBuilder: (BuildContext context, int index) {
@@ -177,15 +215,31 @@ class CalendarChooseState extends State<CalendarChoose> {
         ));
   }
 
-  void determinedaycode(int year) {
-    int d1, d2, d3;
+  Widget showMonthTitle(index){
+    if(widget.type==Constant.BIRTHDAY){
+      return Text("${months[index]}",
+          style: TextStyle(
+              color: Colors.black54, fontWeight: FontWeight.bold));
+    }else if(widget.type==Constant.BOOKING){
+        return Text("${tempMonths[index].month}",
+            style: TextStyle(
+                color: Colors.black54, fontWeight: FontWeight.bold));
+    }else
+      return Text("null");
+  }
 
-    d1 = ((year - 1) / 4.0).floor();
-    d2 = ((year - 1) / 100).floor();
-    d3 = ((year - 1) / 400).floor();
-    dayCode = (year + d1 - d2 + d3) % 7;
-
-    print("mydaycode, $dayCode");
+  Widget showYearTitle(index){
+    if(widget.type == Constant.BIRTHDAY){
+      return Text("${selectedYear}",
+          style: TextStyle(
+              color: Colors.black54, fontWeight: FontWeight.bold));
+    }else if(widget.type == Constant.BOOKING){
+      Text("${tempMonths[index].year}",
+          style: TextStyle(
+              color: Colors.black54, fontWeight: FontWeight.bold));
+    }else{
+      Text("null");
+    }
   }
 
   Widget monthList(indexMonth) {
@@ -200,15 +254,17 @@ class CalendarChooseState extends State<CalendarChoose> {
             margin: const EdgeInsets.all(10.0),
             child: Row(
               children: <Widget>[
-                Text("${months[indexMonth]}",
-                    style: TextStyle(
-                        color: Colors.black54, fontWeight: FontWeight.bold)),
+                showMonthTitle(indexMonth),
                 SizedBox(
                   width: 3,
                 ),
-                Text("2019",
+//                Text("${tempMonths[indexMonth].year}",
+              widget.type==Constant.BIRTHDAY?
+                Text("${selectedYear}",
                     style: TextStyle(
-                        color: Colors.black54, fontWeight: FontWeight.bold))
+                        color: Colors.black54, fontWeight: FontWeight.bold)): Text("${tempMonths[indexMonth].year}",
+                  style: TextStyle(
+                      color: Colors.black54, fontWeight: FontWeight.bold))
               ],
             ),
           ),
@@ -321,7 +377,7 @@ class CalendarChooseState extends State<CalendarChoose> {
 
   void dateOnTapSelection(indexMonth, index) {
     setState(() {
-      if (widget.rangeDate) {
+      if (rangeDate) {
         print("executedrangedate, click is $tapIncrement");
         if (tapIncrement == 1) {
           print("executedrangedate, first tap");
@@ -352,15 +408,12 @@ class CalendarChooseState extends State<CalendarChoose> {
 
           while (tempStartMonthIndex != endMonthIndex) {
             for (int k = 0; k < daysOfMonth[tempStartMonthIndex].length; k++) {
-//              print("whileloopyexecuted");
-//              setColorLightBlueToDay(startMonthIndex, k);
               backToNormal(tempStartMonthIndex, k);
             }
             tempStartMonthIndex++;
           }
 
           for (int l = 0; l < endDayIndex + 1; l++) {
-//            setColorLightBlueToDay(startMonthIndex, l);
             backToNormal(tempStartMonthIndex, l);
           }
 
@@ -385,21 +438,21 @@ class CalendarChooseState extends State<CalendarChoose> {
     });
   }
 
-  int determineLeapYear(int year) {
-    if (year % 4 == FALSE && year % 100 != FALSE || year % 400 == FALSE) {
+  void determineLeapYear(int year) {
+    if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {
       days_in_month[2] = 29;
-      return TRUE;
     } else {
       days_in_month[2] = 28;
-      return FALSE;
     }
   }
 
   calendarMonth(int year, indexMonth) async {
     List<DayMonthDetailModel> dmdmList = List();
     int month = indexMonth, day;
-    print("indexMondth, $indexMonth");
     dayCode=dayOfWeek(1, month, year);
+    if(indexMonth==2){
+      determineLeapYear(selectedYear);
+    }
     // Correct the position for the first date
     for (day = 1; day <= dayCode; day++ ) {
       DayMonthDetailModel localDMDM = DayMonthDetailModel();
@@ -410,6 +463,7 @@ class CalendarChooseState extends State<CalendarChoose> {
     }
 
     // Print all the dates for one month
+    print("currentMonth $month");
     for (day = 1; day <= days_in_month[month]; day++) {
       DayMonthDetailModel localDMDM = DayMonthDetailModel();
       localDMDM.day = day;
@@ -423,9 +477,8 @@ class CalendarChooseState extends State<CalendarChoose> {
     }
     // Set position for next month
     dayCodeList.add(dayCode);
-//    dayCode = (dayCode + days_in_month[month]) % 7;
-
     daysOfMonth.add(dmdmList);
+    print("monthcalendar ${daysOfMonth[0].length}");
   }
 
 
@@ -435,14 +488,21 @@ class CalendarChooseState extends State<CalendarChoose> {
     y -= (m < 3) ? 1 : 0;
     return ( y + (y/4).floor() - (y/100).floor() + (y/400).floor() + t[m-1] + d) % 7;
   }
+
+  @override
+  void yearResult(int year) {
+    setState(() {
+      print("theCalendarYearIs: $year");
+      selectedYear=year;
+      daysOfMonth.clear();
+      determineLeapYear(selectedYear);
+      dayCodeList.clear();
+      for (int i = 1; i <= 12; i++) {
+        calendarMonth(selectedYear, i);
+      }
+    });
+  }
 }
 
-class DayMonthDetailModel {
-  dynamic day;
-  int month, year;
-  String weekDay;
-  BorderRadius borderRadius = BorderRadius.all(Radius.circular(30));
-  Color selectedColor = Colors.white;
-  Color selectedTextColor = Colors.black;
-  Color textColor = Colors.black;
-}
+
+

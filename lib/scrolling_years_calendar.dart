@@ -1,37 +1,25 @@
-library flutter_app_calen;
+/*
+Created by Vishnuvardhan reddy
+date   16 august 2019
+ */
 
 import 'package:flutter/material.dart';
-//import 'package:flutter_app_calen/year_title.dart';
+import 'calendar.dart';
 
 class ScrollingYearsCalendar extends StatefulWidget {
   ScrollingYearsCalendar({
-    @required this.context,
-    @required this.initialDate,
-    @required this.firstDate,
-    @required this.lastDate,
-    @required this.currentDateColor,
+    this.calendarInstance,
+    this.initialDate,
+    this.firstDate,
+    this.lastDate,
+    this.currentDateColor,
     this.highlightedDates,
     this.highlightedDateColor,
     this.monthNames,
     this.onMonthTap,
-  })  : assert(context != null),
-        assert(initialDate != null),
-        assert(firstDate != null),
-        assert(lastDate != null),
-        assert(!initialDate.isBefore(firstDate),
-            'initialDate must be on or after firstDate'),
-        assert(!initialDate.isAfter(lastDate),
-            'initialDate must be on or before lastDate'),
-        assert(!firstDate.isAfter(lastDate),
-            'lastDate must be on or after firstDate'),
-        assert(currentDateColor != null),
-        assert(highlightedDates == null || highlightedDateColor != null,
-            'highlightedDateColor is required if highlightedDates is not null'),
-        assert(
-            monthNames == null || monthNames.length == DateTime.monthsPerYear,
-            'monthNames must contain all months of the year');
+  });
 
-  final BuildContext context;
+  final CalendarChooseState calendarInstance;
   final DateTime initialDate;
   final DateTime firstDate;
   final DateTime lastDate;
@@ -70,8 +58,8 @@ class _ScrollingYearsCalendarState extends State<ScrollingYearsCalendar> {
             ),
           ),
           onTap: (){
-            print(year);
             Navigator.pop(context);
+            widget.calendarInstance.yearResult(year);
 
           },
         );
