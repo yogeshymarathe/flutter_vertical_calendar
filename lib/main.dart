@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
               RaisedButton(
                   onPressed: () async{
                     strDate=await Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => CalendarChoose(type:Constant.BIRTHDAY)));
+                        MaterialPageRoute(builder: (context) => CalendarChoose(type:Constant.BOOKING_RANGE)));
                     if(strDate==null)
                       strDate="";
                   },

@@ -71,27 +71,13 @@ bool rangeDate=false;
         calendarMonth(selectedYear, i);
       }
     }else if(widget.type==Constant.BOOKING){
+      rangeDate=false;
+      bookingCalendaLogic();
+    }else if(widget.type==Constant.BOOKING_RANGE){
       rangeDate=true;
-      int tmonth=DateTime.now().month-1;
-      for (int i = DateTime.now().month; i <= 12; i++) {
-        calendarMonth(selectedYear, i);
-        TempMonthDetails tmds=TempMonthDetails();
-        tmds.month=months[tmonth];
-        tmds.year=selectedYear;
-        tempMonths.add(tmds);
-        tmonth=tmonth+1;
-      }
-      tmonth=0;
-      selectedYear=selectedYear+1;
-      for (int j = 1; j < DateTime.now().month; j++) {
-        TempMonthDetails tmds=TempMonthDetails();
-        tmds.month=months[tmonth];
-        tmds.year=selectedYear;
-        calendarMonth(selectedYear, j);
-        tempMonths.add(tmds);
-        tmonth=tmonth+1;
-      }
-      print("temporarylastvalueis: 2 $tmonth ${DateTime.now().month}");
+      bookingCalendaLogic();
+    }else if(widget.type==Constant.FUTUREYEARS){
+
     }
     SchedulerBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -100,6 +86,28 @@ bool rangeDate=false;
     });
     _showPersBottomSheetCallBack = _showBottomSheet;
     super.initState();
+  }
+
+  void bookingCalendaLogic(){
+    int tmonth=DateTime.now().month-1;
+    for (int i = DateTime.now().month; i <= 12; i++) {
+      calendarMonth(selectedYear, i);
+      TempMonthDetails tmds=TempMonthDetails();
+      tmds.month=months[tmonth];
+      tmds.year=selectedYear;
+      tempMonths.add(tmds);
+      tmonth=tmonth+1;
+    }
+    tmonth=0;
+    selectedYear=selectedYear+1;
+    for (int j = 1; j < DateTime.now().month; j++) {
+      TempMonthDetails tmds=TempMonthDetails();
+      tmds.month=months[tmonth];
+      tmds.year=selectedYear;
+      calendarMonth(selectedYear, j);
+      tempMonths.add(tmds);
+      tmonth=tmonth+1;
+    }
   }
 
   void _showBottomSheet() {
@@ -220,7 +228,7 @@ bool rangeDate=false;
       return Text("${months[index]}",
           style: TextStyle(
               color: Colors.black54, fontWeight: FontWeight.bold));
-    }else if(widget.type==Constant.BOOKING){
+    }else if(widget.type==Constant.BOOKING || widget.type==Constant.BOOKING_RANGE){
         return Text("${tempMonths[index].month}",
             style: TextStyle(
                 color: Colors.black54, fontWeight: FontWeight.bold));
@@ -233,7 +241,7 @@ bool rangeDate=false;
       return Text("${selectedYear}",
           style: TextStyle(
               color: Colors.black54, fontWeight: FontWeight.bold));
-    }else if(widget.type == Constant.BOOKING){
+    }else if(widget.type == Constant.BOOKING || widget.type==Constant.BOOKING_RANGE){
       Text("${tempMonths[index].year}",
           style: TextStyle(
               color: Colors.black54, fontWeight: FontWeight.bold));
