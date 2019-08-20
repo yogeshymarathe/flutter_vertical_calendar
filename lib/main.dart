@@ -46,11 +46,35 @@ class _MyHomePageState extends State<MyHomePage> {
               RaisedButton(
                   onPressed: () async{
                     strDate=await Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => CalendarChoose(type:Constant.BIRTHDAY)));
+                    if(strDate==null)
+                      strDate="";
+                  },
+                  child: Text("Birthday")),
+              RaisedButton(
+                  onPressed: () async{
+                    strDate=await Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => CalendarChoose(type:Constant.BOOKING)));
+                    if(strDate==null)
+                      strDate="";
+                  },
+                  child: Text("Booking")),
+              RaisedButton(
+                  onPressed: () async{
+                    strDate=await Navigator.push(context,
                         MaterialPageRoute(builder: (context) => CalendarChoose(type:Constant.BOOKING_RANGE)));
                     if(strDate==null)
                       strDate="";
                   },
-                  child: Text("click")),
+                  child: Text("Booking range")),
+              RaisedButton(
+                  onPressed: () async{
+                    strDate=await Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => CalendarChoose(type:Constant.FUTUREYEARS)));
+                    if(strDate==null)
+                      strDate="";
+                  },
+                  child: Text("future years"))
             ],
           ),
         ),

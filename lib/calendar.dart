@@ -77,7 +77,10 @@ bool rangeDate=false;
       rangeDate=true;
       bookingCalendaLogic();
     }else if(widget.type==Constant.FUTUREYEARS){
-
+      rangeDate=false;
+      for (int i = 1; i <= 12; i++) {
+        calendarMonth(selectedYear, i);
+      }
     }
     SchedulerBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -135,7 +138,7 @@ bool rangeDate=false;
         });
   }
 
-  void _showModalSheet() {
+  void _showBirthdayPastYearsModalSheet() {
     showModalBottomSheet(
         context: context,
         builder: (builder) {
@@ -155,6 +158,27 @@ bool rangeDate=false;
           );
         });
   }
+
+void _showFutureYearsModalSheet() {
+  showModalBottomSheet(
+      context: context,
+      builder: (builder) {
+        return new Container(
+          color: Colors.white,
+          child: Center(
+            child: ScrollingYearsCalendar(
+              calendarInstance: this,
+              initialDate: DateTime.now(),
+                firstDate: DateTime.now().subtract(Duration(days: 1)), //for future date
+//              firstDate: DateTime.now().subtract(Duration(days: 36500)), // for past dates
+                lastDate: DateTime.now().add(Duration(days: 36500)),// for future date
+//              lastDate: DateTime.now().add(Duration(days:0)), // for past dates
+              currentDateColor: Colors.blue,
+            ),
+          ),
+        );
+      });
+}
 
   Widget appBar() {
     return PreferredSize(
@@ -224,7 +248,7 @@ bool rangeDate=false;
   }
 
   Widget showMonthTitle(index){
-    if(widget.type==Constant.BIRTHDAY){
+    if(widget.type==Constant.BIRTHDAY || widget.type==Constant.FUTUREYEARS){
       return Text("${months[index]}",
           style: TextStyle(
               color: Colors.black54, fontWeight: FontWeight.bold));
@@ -237,16 +261,16 @@ bool rangeDate=false;
   }
 
   Widget showYearTitle(index){
-    if(widget.type == Constant.BIRTHDAY){
+    if(widget.type == Constant.BIRTHDAY || widget.type==Constant.FUTUREYEARS){
       return Text("${selectedYear}",
           style: TextStyle(
               color: Colors.black54, fontWeight: FontWeight.bold));
     }else if(widget.type == Constant.BOOKING || widget.type==Constant.BOOKING_RANGE){
-      Text("${tempMonths[index].year}",
+      return Text("${tempMonths[index].year}",
           style: TextStyle(
               color: Colors.black54, fontWeight: FontWeight.bold));
     }else{
-      Text("null");
+      return Text("null");
     }
   }
 
@@ -256,7 +280,11 @@ bool rangeDate=false;
         GestureDetector(
           behavior:HitTestBehavior.opaque,
           onTap:(){
-            _showModalSheet();
+            if(widget.type==Constant.BIRTHDAY){
+              _showBirthdayPastYearsModalSheet();
+            }else if(widget.type==Constant.FUTUREYEARS){
+              _showFutureYearsModalSheet();
+            }
             },
           child: Container(
             margin: const EdgeInsets.all(10.0),
@@ -266,13 +294,7 @@ bool rangeDate=false;
                 SizedBox(
                   width: 3,
                 ),
-//                Text("${tempMonths[indexMonth].year}",
-              widget.type==Constant.BIRTHDAY?
-                Text("${selectedYear}",
-                    style: TextStyle(
-                        color: Colors.black54, fontWeight: FontWeight.bold)): Text("${tempMonths[indexMonth].year}",
-                  style: TextStyle(
-                      color: Colors.black54, fontWeight: FontWeight.bold))
+                showYearTitle(indexMonth)
               ],
             ),
           ),
