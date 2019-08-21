@@ -7,16 +7,17 @@ description: nothing is impossible.
 import 'package:calendar_vertical/scrolling_years_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:intl/intl.dart';
 import 'day_details_model.dart';
 
 class CalendarChoose extends StatefulWidget {
   String type;
-  Color currentDateBackgroundColor= Colors.redAccent;
-  Color currentDateFontColor= Colors.black;
+  Color currentDateBackgroundColor = Colors.redAccent;
+  Color currentDateFontColor = Colors.black;
   Color rangeStartEndBackgroundColor;
-  Color innerRangeBackgroundColor= Colors.lightBlueAccent;
+  Color innerRangeBackgroundColor = Colors.lightBlueAccent;
   Color selectionBackgroundColor = Colors.blue;
-  Color selectionFontColor= Colors.white;
+  Color selectionFontColor = Colors.white;
 //  CalendarChoose({this.type});
   CalendarChoose(this.type,
       {this.currentDateBackgroundColor = Colors.redAccent,
@@ -24,12 +25,12 @@ class CalendarChoose extends StatefulWidget {
       this.selectionBackgroundColor = Colors.blue,
       this.selectionFontColor = Colors.white});
 
-  CalendarChoose.range({
-      this.currentDateBackgroundColor= Colors.redAccent,
+  CalendarChoose.range(
+      {this.currentDateBackgroundColor = Colors.redAccent,
       this.currentDateFontColor,
       this.rangeStartEndBackgroundColor = Colors.blue,
-      this.innerRangeBackgroundColor = Colors.lightBlueAccent}){
-    type=Constant.BOOKING_RANGE;
+      this.innerRangeBackgroundColor = Colors.lightBlueAccent}) {
+    type = Constant.BOOKING_RANGE;
   }
 
   @override
@@ -97,6 +98,8 @@ class CalendarChooseState extends State<CalendarChoose>
     }
     SchedulerBinding.instance.addPostFrameCallback((_) {
       setState(() {
+        if (Constant.BOOKING_RANGE != widget.type ||
+            Constant.BOOKING != widget.type) {}
         scrollController.jumpTo(currentMonth * 300);
       });
     });
@@ -306,6 +309,7 @@ class CalendarChooseState extends State<CalendarChoose>
           child: Container(
             margin: const EdgeInsets.all(10.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 showMonthTitle(indexMonth),
                 SizedBox(
@@ -334,6 +338,7 @@ class CalendarChooseState extends State<CalendarChoose>
                       dateOnTapSelection(indexMonth, index);
                     },
                     child: Container(
+                        margin: EdgeInsets.all(3.0),
                         decoration: BoxDecoration(
                             color: daysOfMonth[indexMonth][index].selectedColor,
                             borderRadius:
@@ -350,8 +355,6 @@ class CalendarChooseState extends State<CalendarChoose>
       ],
     );
   }
-
-
 
   void setColorToDay(indexMonth, index) {
     daysOfMonth[indexMonth][index].selectedColor =
@@ -377,8 +380,7 @@ class CalendarChooseState extends State<CalendarChoose>
   }
 
   void showRangeSelection() {
-    print("startMontheInexe ${daysOfMonth.length}  ${dayCodeList.length}");
-    if (startMonthIndex == endMonthIndex) {
+    if (startMonthIndex == endMonthIndex) { /* birthday, future years, booking*/
       print("rangeSelection if");
       int tempDate = startDayIndex;
       while (startDayIndex != endDayIndex) {
@@ -395,10 +397,10 @@ class CalendarChooseState extends State<CalendarChoose>
         startDayIndex++;
       }
     } else {
-      print("rangeSelection else");
+      /*booking_range*/
       for (int j = startDayIndex;
-          j < daysOfMonth[startMonthIndex].length;
-          j++) {
+      j < daysOfMonth[startMonthIndex].length;
+      j++) {
         if (j != startDayIndex)
           setColorLightBlueToDay(startMonthIndex, j);
         else
@@ -424,15 +426,12 @@ class CalendarChooseState extends State<CalendarChoose>
     }
   }
 
-  void firstTapOnly(indexMonth,index){
-    if (daysOfMonth[indexMonth][index].day != "")
-    {
+  void firstTapOnly(indexMonth, index) {
+    if (daysOfMonth[indexMonth][index].day != "") {
       print("executedrangedate, first tap");
-      selectedDate="";
+      selectedDate = "";
       selectedDate =
-      "${daysOfMonth[indexMonth][index]
-          .day}/${daysOfMonth[indexMonth][index]
-          .month}/${daysOfMonth[indexMonth][index].year}";
+          "${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
       setColorToDay(indexMonth, index);
       startMonthIndex = indexMonth;
       startDayIndex = index;
@@ -440,34 +439,47 @@ class CalendarChooseState extends State<CalendarChoose>
       tapIncrement = tapIncrement + 1;
     }
   }
-
+  DateFormat dateFormat=DateFormat("dd-MM-yyyy");
+  DateTime startDateTime;
   void dateOnTapSelection(indexMonth, index) {
     setState(() {
       if (rangeDate) {
         print("executedrangedate, click is $tapIncrement");
         if (tapIncrement == 1) {
-          firstTapOnly(indexMonth,index);
+
+          startDateTime= dateFormat.parse("${daysOfMonth[indexMonth][index].day}-${daysOfMonth[indexMonth][index].month}-${daysOfMonth[indexMonth][index].year}");
+print("firstselection   ${daysOfMonth[indexMonth][index].day}-${daysOfMonth[indexMonth][index].month}-${daysOfMonth[indexMonth][index].year}");
+
+          firstTapOnly(indexMonth, index);
         } else if (tapIncrement == 2) {
-          if (daysOfMonth[indexMonth][index].day!=""){
+          if (daysOfMonth[indexMonth][index].day != "") {
             print("executedrangedate, second tap");
-          endMonthIndex = indexMonth;
-          endDayIndex = index;
+            endMonthIndex = indexMonth;
+            endDayIndex = index;
+            DateTime endDateTime=dateFormat.parse("${daysOfMonth[indexMonth][index].day}-${daysOfMonth[indexMonth][index].month}-${daysOfMonth[indexMonth][index].year}");
+            bool isAfterStatDate=endDateTime.isAfter(startDateTime);
+            print("$startDateTime   $endDateTime mystartdate is: $isAfterStatDate");
+            if(isAfterStatDate){
+              print(
+                  "rangeSelection else startmonth: $startMonthIndex endMonth: $endMonthIndex ,startDay: $startDayIndex endDay: $endDayIndex");
 
-          selectedDate +=
-          "  ${daysOfMonth[indexMonth][index]
-              .day}/${daysOfMonth[indexMonth][index]
-              .month}/${daysOfMonth[indexMonth][index].year}";
-          setColorToDay(indexMonth, index);
-          daysOfMonth[indexMonth][index].borderRadius = BorderRadius.only(
-              topLeft: Radius.circular(10),
-              bottomLeft: Radius.circular(10),
-              topRight: Radius.circular(30),
-              bottomRight: Radius.circular(30));
+              selectedDate +=
+              "  ${daysOfMonth[indexMonth][index]
+                  .day}/${daysOfMonth[indexMonth][index]
+                  .month}/${daysOfMonth[indexMonth][index].year}";
+              setColorToDay(indexMonth, index);
+              daysOfMonth[indexMonth][index].borderRadius = BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  bottomLeft: Radius.circular(10),
+                  topRight: Radius.circular(30),
+                  bottomRight: Radius.circular(30));
 
-          showRangeSelection();
-            tapIncrement = tapIncrement + 1;
-        }
+              showRangeSelection();
+              tapIncrement = tapIncrement + 1;
+            }
 
+
+          }
         } else if (tapIncrement == 3) {
           print("executedrangedate, Third tap");
           for (int i = 0; i < daysOfMonth[tempStartMonthIndex].length; i++) {
@@ -490,24 +502,23 @@ class CalendarChooseState extends State<CalendarChoose>
         }
 
       } else {
-        if(daysOfMonth[indexMonth][index].day!=""){
-        daysOfMonth[indexMonth][index].selectedColor =
-            widget.selectionBackgroundColor;
-        daysOfMonth[indexMonth][index].selectedTextColor =
-            widget.selectionFontColor;
-        selectedDate =
-        "${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index]
-            .month}/${daysOfMonth[indexMonth][index].year}";
-        if (isLastSelected) {
-          daysOfMonth[lastSelectedMonth][lastSelectedDay].selectedColor =
-              Colors.white;
-          daysOfMonth[lastSelectedMonth][lastSelectedDay].selectedTextColor =
-              Colors.black;
+        if (daysOfMonth[indexMonth][index].day != "") {
+          daysOfMonth[indexMonth][index].selectedColor =
+              widget.selectionBackgroundColor;
+          daysOfMonth[indexMonth][index].selectedTextColor =
+              widget.selectionFontColor;
+          selectedDate =
+              "${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
+          if (isLastSelected) {
+            daysOfMonth[lastSelectedMonth][lastSelectedDay].selectedColor =
+                Colors.white;
+            daysOfMonth[lastSelectedMonth][lastSelectedDay].selectedTextColor =
+                Colors.black;
+          }
+          isLastSelected = true;
+          lastSelectedDay = index;
+          lastSelectedMonth = indexMonth;
         }
-        isLastSelected = true;
-        lastSelectedDay = index;
-        lastSelectedMonth = indexMonth;
-      }
       }
     });
   }
@@ -542,11 +553,22 @@ class CalendarChooseState extends State<CalendarChoose>
       localDMDM.day = day;
       localDMDM.month = month;
       localDMDM.year = year;
-      if (DateTime.now().month == indexMonth && DateTime.now().day == day) {
-        localDMDM.selectedColor = widget.currentDateBackgroundColor;
-        localDMDM.selectedTextColor = widget.currentDateFontColor;
-        currentMonth = indexMonth.toDouble();
+      if (Constant.BOOKING_RANGE == widget.type) {
+        if (indexMonth <= DateTime.now().month &&
+            day < DateTime.now().day &&
+            year <= DateTime.now().year) {
+          localDMDM.selectedTextColor = Colors.black12;
+        }
       }
+
+      // current date start
+//      if (DateTime.now().month == indexMonth && DateTime.now().day == day) {
+//        localDMDM.selectedColor = widget.currentDateBackgroundColor;
+//        localDMDM.selectedTextColor = widget.currentDateFontColor;
+//        currentMonth = indexMonth.toDouble();
+//      }
+      //current date end
+
       dmdmList.add(localDMDM);
     }
     // Set position for next month
