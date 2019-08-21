@@ -4,18 +4,33 @@ date 19 august 2019
 description: nothing is impossible.
  */
 
-
-
 import 'package:calendar_vertical/scrolling_years_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'day_details_model.dart';
 
-
 class CalendarChoose extends StatefulWidget {
-
   String type;
-  CalendarChoose({this.type});
+  Color currentDateBackgroundColor= Colors.redAccent;
+  Color currentDateFontColor= Colors.black;
+  Color rangeStartEndBackgroundColor;
+  Color innerRangeBackgroundColor= Colors.lightBlueAccent;
+  Color selectionBackgroundColor = Colors.blue;
+  Color selectionFontColor= Colors.white;
+//  CalendarChoose({this.type});
+  CalendarChoose(this.type,
+      {this.currentDateBackgroundColor = Colors.redAccent,
+      this.currentDateFontColor = Colors.black,
+      this.selectionBackgroundColor = Colors.blue,
+      this.selectionFontColor = Colors.white});
+
+  CalendarChoose.range({
+      this.currentDateBackgroundColor= Colors.redAccent,
+      this.currentDateFontColor,
+      this.rangeStartEndBackgroundColor = Colors.blue,
+      this.innerRangeBackgroundColor = Colors.lightBlueAccent}){
+    type=Constant.BOOKING_RANGE;
+  }
 
   @override
   State<StatefulWidget> createState() {
@@ -23,9 +38,10 @@ class CalendarChoose extends StatefulWidget {
   }
 }
 
-class CalendarChooseState extends State<CalendarChoose> implements YearCallback{
-final _scaffoldKey = new GlobalKey<ScaffoldState>();
-bool rangeDate=false;
+class CalendarChooseState extends State<CalendarChoose>
+    implements YearCallback {
+  final _scaffoldKey = new GlobalKey<ScaffoldState>();
+  bool rangeDate = false;
   VoidCallback _showPersBottomSheetCallBack;
   List weeks = ["S", "M", "T", "W", "T", "F", "S"];
   List days_in_month = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -56,31 +72,28 @@ bool rangeDate=false;
   int startDayIndex = 0;
   int endMonthIndex = 0;
   int endDayIndex = 0;
-  int selectedYear=DateTime.now().year;
+  int selectedYear = DateTime.now().year;
   List<TempMonthDetails> tempMonths;
-  int bookingFistIteration=1;
+  int bookingFistIteration = 1;
+  int tapIncrement = 1;
   @override
   void initState() {
     daysOfMonth = List();
-    tempMonths=List();
+    tempMonths = List();
     determineLeapYear(selectedYear);
     scrollController = new ScrollController(initialScrollOffset: 11.0);
-    if(widget.type==Constant.BIRTHDAY) {
-      rangeDate=false;
+    if (widget.type == Constant.BIRTHDAY ||
+        widget.type == Constant.FUTUREYEARS) {
+      rangeDate = false;
       for (int i = 1; i <= 12; i++) {
         calendarMonth(selectedYear, i);
       }
-    }else if(widget.type==Constant.BOOKING){
-      rangeDate=false;
+    } else if (widget.type == Constant.BOOKING) {
+      rangeDate = false;
       bookingCalendaLogic();
-    }else if(widget.type==Constant.BOOKING_RANGE){
-      rangeDate=true;
+    } else if (widget.type == Constant.BOOKING_RANGE) {
+      rangeDate = true;
       bookingCalendaLogic();
-    }else if(widget.type==Constant.FUTUREYEARS){
-      rangeDate=false;
-      for (int i = 1; i <= 12; i++) {
-        calendarMonth(selectedYear, i);
-      }
     }
     SchedulerBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -91,25 +104,25 @@ bool rangeDate=false;
     super.initState();
   }
 
-  void bookingCalendaLogic(){
-    int tmonth=DateTime.now().month-1;
+  void bookingCalendaLogic() {
+    int tmonth = DateTime.now().month - 1;
     for (int i = DateTime.now().month; i <= 12; i++) {
       calendarMonth(selectedYear, i);
-      TempMonthDetails tmds=TempMonthDetails();
-      tmds.month=months[tmonth];
-      tmds.year=selectedYear;
+      TempMonthDetails tmds = TempMonthDetails();
+      tmds.month = months[tmonth];
+      tmds.year = selectedYear;
       tempMonths.add(tmds);
-      tmonth=tmonth+1;
+      tmonth = tmonth + 1;
     }
-    tmonth=0;
-    selectedYear=selectedYear+1;
+    tmonth = 0;
+    selectedYear = selectedYear + 1;
     for (int j = 1; j < DateTime.now().month; j++) {
-      TempMonthDetails tmds=TempMonthDetails();
-      tmds.month=months[tmonth];
-      tmds.year=selectedYear;
+      TempMonthDetails tmds = TempMonthDetails();
+      tmds.month = months[tmonth];
+      tmds.year = selectedYear;
       calendarMonth(selectedYear, j);
       tempMonths.add(tmds);
-      tmonth=tmonth+1;
+      tmonth = tmonth + 1;
     }
   }
 
@@ -149,9 +162,11 @@ bool rangeDate=false;
                 calendarInstance: this,
                 initialDate: DateTime.now(),
 //                firstDate: DateTime.now().subtract(Duration(days: 1)), //for future date
-                firstDate: DateTime.now().subtract(Duration(days: 36500)), // for past dates
+                firstDate: DateTime.now()
+                    .subtract(Duration(days: 36500)), // for past dates
 //                lastDate: DateTime.now().add(Duration(days: 36500)),// for future date
-                lastDate: DateTime.now().add(Duration(days:0)), // for past dates
+                lastDate:
+                    DateTime.now().add(Duration(days: 0)), // for past dates
                 currentDateColor: Colors.blue,
               ),
             ),
@@ -159,26 +174,28 @@ bool rangeDate=false;
         });
   }
 
-void _showFutureYearsModalSheet() {
-  showModalBottomSheet(
-      context: context,
-      builder: (builder) {
-        return new Container(
-          color: Colors.white,
-          child: Center(
-            child: ScrollingYearsCalendar(
-              calendarInstance: this,
-              initialDate: DateTime.now(),
-                firstDate: DateTime.now().subtract(Duration(days: 1)), //for future date
+  void _showFutureYearsModalSheet() {
+    showModalBottomSheet(
+        context: context,
+        builder: (builder) {
+          return new Container(
+            color: Colors.white,
+            child: Center(
+              child: ScrollingYearsCalendar(
+                calendarInstance: this,
+                initialDate: DateTime.now(),
+                firstDate: DateTime.now()
+                    .subtract(Duration(days: 1)), //for future date
 //              firstDate: DateTime.now().subtract(Duration(days: 36500)), // for past dates
-                lastDate: DateTime.now().add(Duration(days: 36500)),// for future date
+                lastDate: DateTime.now()
+                    .add(Duration(days: 36500)), // for future date
 //              lastDate: DateTime.now().add(Duration(days:0)), // for past dates
-              currentDateColor: Colors.blue,
+                currentDateColor: Colors.blue,
+              ),
             ),
-          ),
-        );
-      });
-}
+          );
+        });
+  }
 
   Widget appBar() {
     return PreferredSize(
@@ -232,8 +249,8 @@ void _showFutureYearsModalSheet() {
                   itemCount: daysOfMonth.length,
                   itemBuilder: (context, index) {
                     return Container(
-//                      height: 28 * daysOfMonth.length / 0.9,
-                      height: 355,
+                      height: 28 * daysOfMonth.length / 0.9,
+//                      height: 355,
                       child: monthList(index),
                     );
                   },
@@ -247,29 +264,29 @@ void _showFutureYearsModalSheet() {
         ));
   }
 
-  Widget showMonthTitle(index){
-    if(widget.type==Constant.BIRTHDAY || widget.type==Constant.FUTUREYEARS){
+  Widget showMonthTitle(index) {
+    if (widget.type == Constant.BIRTHDAY ||
+        widget.type == Constant.FUTUREYEARS) {
       return Text("${months[index]}",
-          style: TextStyle(
-              color: Colors.black54, fontWeight: FontWeight.bold));
-    }else if(widget.type==Constant.BOOKING || widget.type==Constant.BOOKING_RANGE){
-        return Text("${tempMonths[index].month}",
-            style: TextStyle(
-                color: Colors.black54, fontWeight: FontWeight.bold));
-    }else
+          style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold));
+    } else if (widget.type == Constant.BOOKING ||
+        widget.type == Constant.BOOKING_RANGE) {
+      return Text("${tempMonths[index].month}",
+          style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold));
+    } else
       return Text("null");
   }
 
-  Widget showYearTitle(index){
-    if(widget.type == Constant.BIRTHDAY || widget.type==Constant.FUTUREYEARS){
+  Widget showYearTitle(index) {
+    if (widget.type == Constant.BIRTHDAY ||
+        widget.type == Constant.FUTUREYEARS) {
       return Text("${selectedYear}",
-          style: TextStyle(
-              color: Colors.black54, fontWeight: FontWeight.bold));
-    }else if(widget.type == Constant.BOOKING || widget.type==Constant.BOOKING_RANGE){
+          style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold));
+    } else if (widget.type == Constant.BOOKING ||
+        widget.type == Constant.BOOKING_RANGE) {
       return Text("${tempMonths[index].year}",
-          style: TextStyle(
-              color: Colors.black54, fontWeight: FontWeight.bold));
-    }else{
+          style: TextStyle(color: Colors.black54, fontWeight: FontWeight.bold));
+    } else {
       return Text("null");
     }
   }
@@ -278,14 +295,14 @@ void _showFutureYearsModalSheet() {
     return Column(
       children: <Widget>[
         GestureDetector(
-          behavior:HitTestBehavior.opaque,
-          onTap:(){
-            if(widget.type==Constant.BIRTHDAY){
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            if (widget.type == Constant.BIRTHDAY) {
               _showBirthdayPastYearsModalSheet();
-            }else if(widget.type==Constant.FUTUREYEARS){
+            } else if (widget.type == Constant.FUTUREYEARS) {
               _showFutureYearsModalSheet();
             }
-            },
+          },
           child: Container(
             margin: const EdgeInsets.all(10.0),
             child: Row(
@@ -334,10 +351,11 @@ void _showFutureYearsModalSheet() {
     );
   }
 
-  int tapIncrement = 1;
+
 
   void setColorToDay(indexMonth, index) {
-    daysOfMonth[indexMonth][index].selectedColor = Colors.blue;
+    daysOfMonth[indexMonth][index].selectedColor =
+        widget.rangeStartEndBackgroundColor;
     daysOfMonth[indexMonth][index].selectedTextColor = Colors.white;
   }
 
@@ -345,7 +363,8 @@ void _showFutureYearsModalSheet() {
     if (daysOfMonth[indexMonth][index].day != "") {
       daysOfMonth[indexMonth][index].borderRadius =
           BorderRadius.all(Radius.circular(10));
-      daysOfMonth[indexMonth][index].selectedColor = Colors.lightBlueAccent;
+      daysOfMonth[indexMonth][index].selectedColor =
+          widget.innerRangeBackgroundColor;
       daysOfMonth[indexMonth][index].selectedTextColor = Colors.white;
     }
   }
@@ -405,31 +424,50 @@ void _showFutureYearsModalSheet() {
     }
   }
 
+  void firstTapOnly(indexMonth,index){
+    if (daysOfMonth[indexMonth][index].day != "")
+    {
+      print("executedrangedate, first tap");
+      selectedDate="";
+      selectedDate =
+      "${daysOfMonth[indexMonth][index]
+          .day}/${daysOfMonth[indexMonth][index]
+          .month}/${daysOfMonth[indexMonth][index].year}";
+      setColorToDay(indexMonth, index);
+      startMonthIndex = indexMonth;
+      startDayIndex = index;
+      tempStartMonthIndex = indexMonth;
+      tapIncrement = tapIncrement + 1;
+    }
+  }
+
   void dateOnTapSelection(indexMonth, index) {
     setState(() {
       if (rangeDate) {
         print("executedrangedate, click is $tapIncrement");
         if (tapIncrement == 1) {
-          print("executedrangedate, first tap");
-          selectedDate =
-              "${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
-          setColorToDay(indexMonth, index);
-          startMonthIndex = indexMonth;
-          startDayIndex = index;
-          tempStartMonthIndex = indexMonth;
+          firstTapOnly(indexMonth,index);
         } else if (tapIncrement == 2) {
-          print("executedrangedate, second tap");
-            selectedDate +=
-                "  ${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
-            setColorToDay(indexMonth, index);
-            daysOfMonth[indexMonth][index].borderRadius = BorderRadius.only(
-                topLeft: Radius.circular(10),
-                bottomLeft: Radius.circular(10),
-                topRight: Radius.circular(30),
-                bottomRight: Radius.circular(30));
-            endMonthIndex = indexMonth;
-            endDayIndex = index;
-            showRangeSelection();
+          if (daysOfMonth[indexMonth][index].day!=""){
+            print("executedrangedate, second tap");
+          endMonthIndex = indexMonth;
+          endDayIndex = index;
+
+          selectedDate +=
+          "  ${daysOfMonth[indexMonth][index]
+              .day}/${daysOfMonth[indexMonth][index]
+              .month}/${daysOfMonth[indexMonth][index].year}";
+          setColorToDay(indexMonth, index);
+          daysOfMonth[indexMonth][index].borderRadius = BorderRadius.only(
+              topLeft: Radius.circular(10),
+              bottomLeft: Radius.circular(10),
+              topRight: Radius.circular(30),
+              bottomRight: Radius.circular(30));
+
+          showRangeSelection();
+            tapIncrement = tapIncrement + 1;
+        }
+
         } else if (tapIncrement == 3) {
           print("executedrangedate, Third tap");
           for (int i = 0; i < daysOfMonth[tempStartMonthIndex].length; i++) {
@@ -447,14 +485,19 @@ void _showFutureYearsModalSheet() {
             backToNormal(tempStartMonthIndex, l);
           }
 
-          tapIncrement = 0;
+          tapIncrement = 1;
+          firstTapOnly(indexMonth, index);
         }
-        tapIncrement = tapIncrement + 1;
+
       } else {
-        daysOfMonth[indexMonth][index].selectedColor = Colors.blue;
-        daysOfMonth[indexMonth][index].selectedTextColor = Colors.white;
+        if(daysOfMonth[indexMonth][index].day!=""){
+        daysOfMonth[indexMonth][index].selectedColor =
+            widget.selectionBackgroundColor;
+        daysOfMonth[indexMonth][index].selectedTextColor =
+            widget.selectionFontColor;
         selectedDate =
-            "${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
+        "${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index]
+            .month}/${daysOfMonth[indexMonth][index].year}";
         if (isLastSelected) {
           daysOfMonth[lastSelectedMonth][lastSelectedDay].selectedColor =
               Colors.white;
@@ -464,6 +507,7 @@ void _showFutureYearsModalSheet() {
         isLastSelected = true;
         lastSelectedDay = index;
         lastSelectedMonth = indexMonth;
+      }
       }
     });
   }
@@ -479,12 +523,12 @@ void _showFutureYearsModalSheet() {
   calendarMonth(int year, indexMonth) async {
     List<DayMonthDetailModel> dmdmList = List();
     int month = indexMonth, day;
-    dayCode=dayOfWeek(1, month, year);
-    if(indexMonth==2){
+    dayCode = dayOfWeek(1, month, year);
+    if (indexMonth == 2) {
       determineLeapYear(selectedYear);
     }
     // Correct the position for the first date
-    for (day = 1; day <= dayCode; day++ ) {
+    for (day = 1; day <= dayCode; day++) {
       DayMonthDetailModel localDMDM = DayMonthDetailModel();
       localDMDM.day = "";
       localDMDM.month = 0;
@@ -493,14 +537,14 @@ void _showFutureYearsModalSheet() {
     }
 
     // Print all the dates for one month
-    print("currentMonth $month");
     for (day = 1; day <= days_in_month[month]; day++) {
       DayMonthDetailModel localDMDM = DayMonthDetailModel();
       localDMDM.day = day;
       localDMDM.month = month;
       localDMDM.year = year;
       if (DateTime.now().month == indexMonth && DateTime.now().day == day) {
-        localDMDM.selectedColor = Colors.blue;
+        localDMDM.selectedColor = widget.currentDateBackgroundColor;
+        localDMDM.selectedTextColor = widget.currentDateFontColor;
         currentMonth = indexMonth.toDouble();
       }
       dmdmList.add(localDMDM);
@@ -508,22 +552,25 @@ void _showFutureYearsModalSheet() {
     // Set position for next month
     dayCodeList.add(dayCode);
     daysOfMonth.add(dmdmList);
-    print("monthcalendar ${daysOfMonth[0].length}");
   }
 
-
-  int dayOfWeek(int d, int m, int y)
-  {
-    List<int> t = [ 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 ];
+  int dayOfWeek(int d, int m, int y) {
+    List<int> t = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
     y -= (m < 3) ? 1 : 0;
-    return ( y + (y/4).floor() - (y/100).floor() + (y/400).floor() + t[m-1] + d) % 7;
+    return (y +
+            (y / 4).floor() -
+            (y / 100).floor() +
+            (y / 400).floor() +
+            t[m - 1] +
+            d) %
+        7;
   }
 
   @override
   void yearResult(int year) {
     setState(() {
       print("theCalendarYearIs: $year");
-      selectedYear=year;
+      selectedYear = year;
       daysOfMonth.clear();
       determineLeapYear(selectedYear);
       dayCodeList.clear();
@@ -533,6 +580,3 @@ void _showFutureYearsModalSheet() {
     });
   }
 }
-
-
-

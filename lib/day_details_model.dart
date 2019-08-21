@@ -13,7 +13,6 @@ class DayMonthDetailModel {
   BorderRadius borderRadius = BorderRadius.all(Radius.circular(30));
   Color selectedColor = Colors.white;
   Color selectedTextColor = Colors.black;
-  Color textColor = Colors.black;
 }
 
 class TempMonthDetails{

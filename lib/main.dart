@@ -26,11 +26,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String strDate="";
+  String strDate = "";
   @override
   void initState() {
-        super.initState();
+    super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -44,35 +45,47 @@ class _MyHomePageState extends State<MyHomePage> {
             children: <Widget>[
               Text(strDate),
               RaisedButton(
-                  onPressed: () async{
-                    strDate=await Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => CalendarChoose(type:Constant.BIRTHDAY)));
-                    if(strDate==null)
-                      strDate="";
+                  onPressed: () async {
+                    strDate = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CalendarChoose(
+                                  Constant.BIRTHDAY,
+                                  currentDateFontColor: Colors.blue,
+                                  currentDateBackgroundColor: Colors.amberAccent,
+                                  selectionBackgroundColor: Colors.amber,
+                                  selectionFontColor: Colors.green,
+                                )));
+                    if (strDate == null) strDate = "";
                   },
                   child: Text("Birthday")),
               RaisedButton(
-                  onPressed: () async{
-                    strDate=await Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => CalendarChoose(type:Constant.BOOKING)));
-                    if(strDate==null)
-                      strDate="";
+                  onPressed: () async {
+                    strDate = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                CalendarChoose(Constant.BOOKING)));
+                    if (strDate == null) strDate = "";
                   },
                   child: Text("Booking")),
               RaisedButton(
-                  onPressed: () async{
-                    strDate=await Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => CalendarChoose(type:Constant.BOOKING_RANGE)));
-                    if(strDate==null)
-                      strDate="";
+                  onPressed: () async {
+                    strDate = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CalendarChoose.range()));
+                    if (strDate == null) strDate = "";
                   },
                   child: Text("Booking range")),
               RaisedButton(
-                  onPressed: () async{
-                    strDate=await Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => CalendarChoose(type:Constant.FUTUREYEARS)));
-                    if(strDate==null)
-                      strDate="";
+                  onPressed: () async {
+                    strDate = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                CalendarChoose(Constant.FUTUREYEARS)));
+                    if (strDate == null) strDate = "";
                   },
                   child: Text("future years"))
             ],
@@ -82,5 +95,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-
