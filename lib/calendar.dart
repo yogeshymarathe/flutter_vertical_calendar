@@ -435,6 +435,8 @@ class CalendarChooseState extends State<CalendarChoose>
       setColorToDay(indexMonth, index);
       startMonthIndex = indexMonth;
       startDayIndex = index;
+      lastSelectedMonth=indexMonth;
+      lastSelectedDay=index;
       tempStartMonthIndex = indexMonth;
       tapIncrement = tapIncrement + 1;
     }
@@ -451,11 +453,13 @@ class CalendarChooseState extends State<CalendarChoose>
 print("firstselection   ${daysOfMonth[indexMonth][index].day}-${daysOfMonth[indexMonth][index].month}-${daysOfMonth[indexMonth][index].year}");
 
           firstTapOnly(indexMonth, index);
+
         } else if (tapIncrement == 2) {
           if (daysOfMonth[indexMonth][index].day != "") {
             print("executedrangedate, second tap");
             endMonthIndex = indexMonth;
             endDayIndex = index;
+
             DateTime endDateTime=dateFormat.parse("${daysOfMonth[indexMonth][index].day}-${daysOfMonth[indexMonth][index].month}-${daysOfMonth[indexMonth][index].year}");
             bool isAfterStatDate=endDateTime.isAfter(startDateTime);
             print("$startDateTime   $endDateTime mystartdate is: $isAfterStatDate");
@@ -476,6 +480,14 @@ print("firstselection   ${daysOfMonth[indexMonth][index].day}-${daysOfMonth[inde
 
               showRangeSelection();
               tapIncrement = tapIncrement + 1;
+            }else{
+
+                daysOfMonth[lastSelectedMonth][lastSelectedDay].selectedColor =
+                    Colors.white;
+                daysOfMonth[lastSelectedMonth][lastSelectedDay].selectedTextColor =
+                    Colors.black;
+                tapIncrement=1;
+                firstTapOnly(indexMonth, index);
             }
 
 
