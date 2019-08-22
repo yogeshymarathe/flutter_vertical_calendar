@@ -60,6 +60,8 @@ class CalendarChooseState extends State<CalendarChoose>
     "November",
     "December"
   ];
+  DateFormat dateFormat=DateFormat("dd-MM-yyyy");
+  DateTime startDateTime;
   List<List<DayMonthDetailModel>> daysOfMonth;
   List<int> dayCodeList = List();
   int dayCode;
@@ -441,8 +443,7 @@ class CalendarChooseState extends State<CalendarChoose>
       tapIncrement = tapIncrement + 1;
     }
   }
-  DateFormat dateFormat=DateFormat("dd-MM-yyyy");
-  DateTime startDateTime;
+
   void dateOnTapSelection(indexMonth, index) {
     setState(() {
       if (rangeDate) {
@@ -455,12 +456,19 @@ print("firstselection   ${daysOfMonth[indexMonth][index].day}-${daysOfMonth[inde
           firstTapOnly(indexMonth, index);
 
         } else if (tapIncrement == 2) {
-          if (daysOfMonth[indexMonth][index].day != "") {
+          DateTime endDateTime=dateFormat.parse("${daysOfMonth[indexMonth][index].day}-${daysOfMonth[indexMonth][index].month}-${daysOfMonth[indexMonth][index].year}");
+//         print("datetimetst ${startDateTime.day}  ${endDateTime.day} ${startDateTime.month} ${endDateTime.month} ${startDateTime.year} ${endDateTime.year}");
+//          if(!(startDateTime.day==endDateTime.day && startDateTime.month==endDateTime.month && startDateTime.year==endDateTime.year)){
+//            print("daymonthyearecheck, true");
+//          }else{
+//            print("daymonthyearecheck, false");
+//          }
+          if (daysOfMonth[indexMonth][index].day != "" ) {
             print("executedrangedate, second tap");
             endMonthIndex = indexMonth;
             endDayIndex = index;
 
-            DateTime endDateTime=dateFormat.parse("${daysOfMonth[indexMonth][index].day}-${daysOfMonth[indexMonth][index].month}-${daysOfMonth[indexMonth][index].year}");
+
 
             print("ismydatebefore ${startDateTime.isBefore(endDateTime)}");
 
