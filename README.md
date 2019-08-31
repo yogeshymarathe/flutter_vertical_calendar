@@ -1,16 +1,47 @@
-# calendar_vertical
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+Makes an interesting splash effect when tapping its child widget.  
+  
+## Getting Started  
+  
+To use this plugin, add `splash_tap` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).  
+  
+The color can be set with the **splashColor** property. The splash size is dependent on the size of the child widget passed in - which is constrained by the **minRadius** and **maxRadius** parameters.
+  
+### Example  
+  
+```dart  
+import 'package:flutter/material.dart';  
+import 'package:splash_tap/splash_tap.dart';  
+  
+void main() => runApp(MyApp());  
+  
+class MyApp extends StatelessWidget {  
+  @override  
+  Widget build(BuildContext context) {  
+    return MaterialApp(  
+      title: 'Splash Tap Demo',  
+      theme: ThemeData(  
+        primarySwatch: Colors.blue,  
+      ),  
+      home: SplashTapDemo(),  
+    );  
+  }  
+}  
+  
+class SplashTapDemo extends StatelessWidget {  
+  @override  
+  Widget build(BuildContext context) {  
+    return Scaffold(  
+      body: Center(  
+        child: Splash(  
+          onTap: () {},  
+          child: Text(  
+            'Splash!',  
+            style: TextStyle(fontSize: 32),  
+          ),  
+        ),  
+      ),  
+    );  
+  }  
+}  
+```

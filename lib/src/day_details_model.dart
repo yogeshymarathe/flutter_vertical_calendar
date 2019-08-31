@@ -24,7 +24,7 @@ class YearCallback{
   void yearResult(int year){}
 }
 
-class Constant{
+class Calendar{
   static String BIRTHDAY="birthday";
   static String BOOKING="notrangebooking";
   static String BOOKING_RANGE="inrangebooking";
