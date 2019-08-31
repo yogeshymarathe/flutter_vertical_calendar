@@ -3,13 +3,48 @@ Makes an interesting splash effect when tapping its child widget.
   
 ## Getting Started  
   
-To use this plugin, add `splash_tap` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).  
+To use this plugin, add `calendar_vertical_scroll` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).  
   
-The color can be set with the **splashColor** property. The splash size is dependent on the size of the child widget passed in - which is constrained by the **minRadius** and **maxRadius** parameters.
-  
+This is the calendar for the scenarios like **Birthday**, **booking** and **future years**. **Booking** has two options single date pick and range date pick. **birthday** and **future** calendar has year selection functions. 
+ 
+### Birthday calendar (select past years)
+```text
+     CalendarChoose(
+                     Calendar.BIRTHDAY,
+                     currentDateFontColor: Colors.blue,
+                     currentDateBackgroundColor:
+                     Colors.amberAccent,
+                     selectionBackgroundColor: Colors.amber,
+                     selectionFontColor: Colors.green,
+                  )));
+
+```
+### Booking Calendar (from current month to next 12 months)
+```text
+ CalendarChoose(Calendar.BOOKING)));
+```
+
+### single date pick Booking Calendar (from current month to next 12 months)
+```text
+ CalendarChoose(Calendar.BOOKING)));
+```
+
+### Range date pick Booking Calendar (from current month to next 12 months)
+```text
+  CalendarChoose.range()));
+```
+### future year can be pick ,future Calendar (from current month to next 12 months)
+```text
+   CalendarChoose(Calendar.FUTUREYEARS)));
+```
+
 ### Example  
   
 ```dart  
+import 'package:calendar_vertical/day_details_model.dart';
+import 'package:flutter/material.dart';
+import 'calendar.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -104,5 +139,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
 ```
