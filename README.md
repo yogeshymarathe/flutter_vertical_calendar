@@ -10,38 +10,99 @@ The color can be set with the **splashColor** property. The splash size is depen
 ### Example  
   
 ```dart  
-import 'package:flutter/material.dart';  
-import 'package:splash_tap/splash_tap.dart';  
-  
-void main() => runApp(MyApp());  
-  
-class MyApp extends StatelessWidget {  
-  @override  
-  Widget build(BuildContext context) {  
-    return MaterialApp(  
-      title: 'Splash Tap Demo',  
-      theme: ThemeData(  
-        primarySwatch: Colors.blue,  
-      ),  
-      home: SplashTapDemo(),  
-    );  
-  }  
-}  
-  
-class SplashTapDemo extends StatelessWidget {  
-  @override  
-  Widget build(BuildContext context) {  
-    return Scaffold(  
-      body: Center(  
-        child: Splash(  
-          onTap: () {},  
-          child: Text(  
-            'Splash!',  
-            style: TextStyle(fontSize: 32),  
-          ),  
-        ),  
-      ),  
-    );  
-  }  
-}  
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  String strDate = "";
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Calendar Select Date"),
+      ),
+      body: Container(
+        child: Center(
+          child: Column(
+            children: <Widget>[
+              Text(strDate),
+              RaisedButton(
+                  onPressed: () async {
+                    strDate = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CalendarChoose(
+                                  Calendar.BIRTHDAY,
+                                  currentDateFontColor: Colors.blue,
+                                  currentDateBackgroundColor:
+                                      Colors.amberAccent,
+                                  selectionBackgroundColor: Colors.amber,
+                                  selectionFontColor: Colors.green,
+                                )));
+                    if (strDate == null) strDate = "";
+                  },
+                  child: Text("Birthday")),
+              RaisedButton(
+                  onPressed: () async {
+                    strDate = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                CalendarChoose(Calendar.BOOKING)));
+                    if (strDate == null) strDate = "";
+                  },
+                  child: Text("Booking")),
+              RaisedButton(
+                  onPressed: () async {
+                    strDate = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CalendarChoose.range()));
+                    if (strDate == null) strDate = "";
+                  },
+                  child: Text("Booking range")),
+              RaisedButton(
+                  onPressed: () async {
+                    strDate = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                CalendarChoose(Calendar.FUTUREYEARS)));
+                    if (strDate == null) strDate = "";
+                  },
+                  child: Text("future years")),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 ```
