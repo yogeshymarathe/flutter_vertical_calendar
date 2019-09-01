@@ -24,10 +24,5 @@ class YearCallback{
   void yearResult(int year){}
 }
 
-class Calendar{
-  static String BIRTHDAY="birthday";
-  static String BOOKING="notrangebooking";
-  static String BOOKING_RANGE="inrangebooking";
-  static String FUTUREYEARS="futureyears";
-}
+
 

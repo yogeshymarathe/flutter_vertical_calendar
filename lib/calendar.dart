@@ -10,6 +10,13 @@ import 'package:intl/intl.dart';
 import 'day_details_model.dart';
 import 'scrolling_years_calendar.dart';
 
+class Calendar{
+  static String BIRTHDAY="birthday";
+  static String BOOKING="notrangebooking";
+  static String BOOKING_RANGE="inrangebooking";
+  static String FUTUREYEARS="futureyears";
+}
+
 class CalendarChoose extends StatefulWidget {
   String type;
   Color currentDateBackgroundColor = Colors.redAccent;
