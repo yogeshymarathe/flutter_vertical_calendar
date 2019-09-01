@@ -4,12 +4,11 @@ date 19 august 2019
 description: nothing is impossible.
  */
 
+import 'package:calendar_vertical/scrolling_years_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
-
 import 'day_details_model.dart';
-import 'scrolling_years_calendar.dart';
 
 class CalendarChoose extends StatefulWidget {
   String type;
@@ -23,15 +22,15 @@ class CalendarChoose extends StatefulWidget {
 //  CalendarChoose({this.type});
   CalendarChoose(this.type,
       {this.currentDateBackgroundColor = Colors.redAccent,
-        this.currentDateFontColor = Colors.black,
-        this.selectionBackgroundColor = Colors.blue,
-        this.selectionFontColor = Colors.white});
+      this.currentDateFontColor = Colors.black,
+      this.selectionBackgroundColor = Colors.blue,
+      this.selectionFontColor = Colors.white});
 
   CalendarChoose.range(
       {this.currentDateBackgroundColor = Colors.redAccent,
-        this.currentDateFontColor,
-        this.rangeStartEndBackgroundColor = Colors.blue,
-        this.innerRangeBackgroundColor = Colors.lightBlueAccent}) {
+      this.currentDateFontColor,
+      this.rangeStartEndBackgroundColor = Colors.blue,
+      this.innerRangeBackgroundColor = Colors.lightBlueAccent}) {
     type = Calendar.BOOKING_RANGE;
   }
 
@@ -141,22 +140,22 @@ class CalendarChooseState extends State<CalendarChoose>
 
     _scaffoldKey.currentState
         .showBottomSheet((context) {
-      return new Container(
-        height: 300.0,
-        color: Colors.greenAccent,
-        child: new Center(
-          child: new Text("Hi BottomSheet"),
-        ),
-      );
-    })
+          return new Container(
+            height: 300.0,
+            color: Colors.greenAccent,
+            child: new Center(
+              child: new Text("Hi BottomSheet"),
+            ),
+          );
+        })
         .closed
         .whenComplete(() {
-      if (mounted) {
-        setState(() {
-          _showPersBottomSheetCallBack = _showBottomSheet;
+          if (mounted) {
+            setState(() {
+              _showPersBottomSheetCallBack = _showBottomSheet;
+            });
+          }
         });
-      }
-    });
   }
 
   void _showBirthdayPastYearsModalSheet() {
@@ -244,14 +243,14 @@ class CalendarChooseState extends State<CalendarChoose>
                         height: 30,
                         child: Center(
                             child: Text(
-                              "${weeks[index]}",
-                              style: TextStyle(color: Colors.white),
-                            )));
+                          "${weeks[index]}",
+                          style: TextStyle(color: Colors.white),
+                        )));
                   },
                 ),
               ),
               Expanded(
-                  child:
+                child:
 //                ListView.separated(
 //                  controller: scrollController,
 //                  itemCount: daysOfMonth.length,
@@ -266,11 +265,11 @@ class CalendarChooseState extends State<CalendarChoose>
 //                    return Divider();
 //                  },
 //                ),
-                  CustomScrollView(controller:scrollController,slivers: <Widget>[
-                    SliverList(delegate: SliverChildBuilderDelegate((context,index){
+              CustomScrollView(controller:scrollController,slivers: <Widget>[
+                SliverList(delegate: SliverChildBuilderDelegate((context,index){
                       return monthList(index);
-                    },childCount:daysOfMonth.length ),)
-                  ],)
+                },childCount:daysOfMonth.length ),)
+              ],)
               ),
             ],
           ),
@@ -341,7 +340,7 @@ class CalendarChooseState extends State<CalendarChoose>
                   ? daysOfMonth[indexMonth].length
                   : 0,
               gridDelegate:
-              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7),
+                  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7),
               itemBuilder: (context, index) {
                 return GestureDetector(
                     onTap: () async {
@@ -352,14 +351,14 @@ class CalendarChooseState extends State<CalendarChoose>
                         decoration: BoxDecoration(
                             color: daysOfMonth[indexMonth][index].selectedColor,
                             borderRadius:
-                            daysOfMonth[indexMonth][index].borderRadius),
+                                daysOfMonth[indexMonth][index].borderRadius),
                         child: Center(
                             child: Text(
-                              "${daysOfMonth[indexMonth][index].day}",
-                              style: TextStyle(
-                                  color: daysOfMonth[indexMonth][index]
-                                      .selectedTextColor),
-                            ))));
+                          "${daysOfMonth[indexMonth][index].day}",
+                          style: TextStyle(
+                              color: daysOfMonth[indexMonth][index]
+                                  .selectedTextColor),
+                        ))));
               }),
         ),
       ],
@@ -411,8 +410,8 @@ class CalendarChooseState extends State<CalendarChoose>
       int tempStartDayIndex = startDayIndex;
       int tempStartMonthIndex = startMonthIndex;
       for (int j = tempStartDayIndex;
-      j < daysOfMonth[tempStartMonthIndex].length;
-      j++) {
+          j < daysOfMonth[tempStartMonthIndex].length;
+          j++) {
         if (j != tempStartDayIndex)
           setColorLightBlueToDay(tempStartMonthIndex, j);
         else
@@ -445,7 +444,7 @@ class CalendarChooseState extends State<CalendarChoose>
 
       selectedDate = "";
       selectedDate =
-      "${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
+          "${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
       setColorToDay(indexMonth, index);
       startMonthIndex = indexMonth;
       startDayIndex = index;
@@ -475,7 +474,7 @@ class CalendarChooseState extends State<CalendarChoose>
             bool isAfterStartDate = startDateTime.isBefore(endDateTime);
             if (isAfterStartDate) {
               selectedDate +=
-              "  ${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
+                  "  ${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
               setColorToDay(indexMonth, index);
               daysOfMonth[indexMonth][index].borderRadius = BorderRadius.only(
                   topLeft: Radius.circular(10),
@@ -508,8 +507,8 @@ class CalendarChooseState extends State<CalendarChoose>
 
             while (tempStartMonthIndex != endMonthIndex) {
               for (int k = 0;
-              k < daysOfMonth[tempStartMonthIndex].length;
-              k++) {
+                  k < daysOfMonth[tempStartMonthIndex].length;
+                  k++) {
                 backToNormal(tempStartMonthIndex, k);
               }
               tempStartMonthIndex++;
@@ -525,13 +524,13 @@ class CalendarChooseState extends State<CalendarChoose>
         }
       } else {
         if (daysOfMonth[indexMonth][index].day != "" && daysOfMonth[indexMonth][index].selectedTextColor !=
-            Colors.black12) {
+        Colors.black12) {
           daysOfMonth[indexMonth][index].selectedColor =
               widget.selectionBackgroundColor;
           daysOfMonth[indexMonth][index].selectedTextColor =
               widget.selectionFontColor;
           selectedDate =
-          "${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
+              "${daysOfMonth[indexMonth][index].day}/${daysOfMonth[indexMonth][index].month}/${daysOfMonth[indexMonth][index].year}";
           if (isLastSelected) {
             daysOfMonth[lastSelectedMonth][lastSelectedDay].selectedColor =
                 Colors.white;
@@ -578,9 +577,9 @@ class CalendarChooseState extends State<CalendarChoose>
       localDMDM.year = year;
       DateTime eachDate = dateFormat.parse("$day-$indexMonth-$year");
       if (Calendar.BOOKING_RANGE == widget.type) {
-        if (eachDate.isBefore(DateTime.now())) {
-          localDMDM.selectedTextColor = Colors.black12;
-        }
+          if (eachDate.isBefore(DateTime.now())) {
+            localDMDM.selectedTextColor = Colors.black12;
+          }
       } else if (Calendar.BIRTHDAY == widget.type) {
         if (eachDate.isAfter(DateTime.now())) {
           localDMDM.selectedTextColor = Colors.black12;
@@ -606,11 +605,11 @@ class CalendarChooseState extends State<CalendarChoose>
     List<int> t = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
     y -= (m < 3) ? 1 : 0;
     return (y +
-        (y / 4).floor() -
-        (y / 100).floor() +
-        (y / 400).floor() +
-        t[m - 1] +
-        d) %
+            (y / 4).floor() -
+            (y / 100).floor() +
+            (y / 400).floor() +
+            t[m - 1] +
+            d) %
         7;
   }
 
