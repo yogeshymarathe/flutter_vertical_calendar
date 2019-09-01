@@ -1,4 +1,4 @@
-
+<img src="screenshot/calendar_screenshot.gif" width=300 height=600>
 Makes an interesting splash effect when tapping its child widget.  
   
 ## Getting Started  
