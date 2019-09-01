@@ -1,13 +1,13 @@
 name: calendar_vertical_scroll
 description: This calendar based on the requirment of Booking, birthday and future day selection.
-version: 0.0.1
+version: 0.0.2
 author: Yogesh Marathe <yogeshymarathe@gmail.com>
 homepage: https://github.com/yogeshymarathe/flutter_vertical_calendar.git
 environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  flutter:
+    flutter:
     sdk: flutter
   intl: ^0.15.8
 
